@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Student Data</title>
+
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" href="{% static 'marks/style.css' %}">
+
+    <!-- jQuery + DataTables -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <h2>Upload Student Data Excel File</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".xlsx" required>
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+    {% if passed_file and failed_file %}
+        <h3>Download Results</h3>
+        <center>
+        <a href="/media/exports/{{ passed_file }}" download>
+            <button>Download Passed Students</button>
+        </a>
+        <a href="/media/exports/{{ failed_file }}" download>
+            <button>Download Failed Students</button>
+        </a>
+        </center>
+    {% endif %}
+
+    {% if table_data %}
+        <h3>All Records</h3>
+        <table id="studentTable" class="display">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Reg No</th>
+                    <th>Mail ID</th>
+                    <th>Sub1</th>
+                    <th>Sub2</th>
+                    <th>Sub3</th>
+                    <th>Total</th>
+                    <th>Average</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in table_data %}
+                <tr>
+                    <td>{{ row.Name }}</td>
+                    <td>{{ row.Registration_Number }}</td>
+                    <td>{{ row.mailid }}</td>
+                    <td>{{ row.Sub1 }}</td>
+                    <td>{{ row.Sub2 }}</td>
+                    <td>{{ row.Sub3 }}</td>
+                    <td>{{ row.Total }}</td>
+                    <td>{{ row.Average|floatformat:2 }}</td>
+                    <td>{{ row.Result }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <script>
+        $(document).ready(function() {
+            $('#studentTable').DataTable();
+        });
+    </script>
+</body>
+</html>
